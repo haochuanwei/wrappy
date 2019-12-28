@@ -133,7 +133,8 @@ def guard(fallback_retval=0, fallback_func=None, print_traceback=False):
     # determine which fallback to use later
     if fallback_func is not None:
         assert callable(fallback_func), "Expected a callable as the fallback function."
-        fallback = fallback_func
+        # recursively guard the fallback function in case it crashes too
+        fallback = guard(print_traceback=print_traceback)(fallback_func)
     else:
         def fallback(*args, **kwargs):
             return fallback_retval
@@ -145,7 +146,7 @@ def guard(fallback_retval=0, fallback_func=None, print_traceback=False):
             try:
                 retval = func(*args, **kwargs)
             except Exception as e:
-                logger.warn(f'Guarding function {func.__module}.{func.__qualname__}: suppressing {type(e)}: {e}')
+                logger.warn(f'Guarding function {func.__module__}.{func.__qualname__}: suppressing {type(e)}: {e}')
                 if print_traceback:
                     traceback.print_exc()
                 retval = fallback(*args, **kwargs)
