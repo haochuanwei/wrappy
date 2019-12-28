@@ -170,8 +170,8 @@ def memoize(cache_limit=1000):
     Uses an OrderedDict for least-recently-used(LRU) caching.
     '''
     def wrapper(func):
-        @wraps(func)
         memory = OrderedDict()
+        @wraps(func)
         def memoized_func(*args, **kwargs):
             lookup_key = args_as_string(*args, **kwargs)
             if lookup_key in memory:
