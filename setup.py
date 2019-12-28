@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="wrappy",
-    version="0.1.1",
+    version="0.1.2",
     author="Harry Wei",
     author_email="pepsimixt@gmail.com",
     description="Decorators for common developer utility",
