@@ -7,24 +7,26 @@ Decorators for common develop utilities.
 def do_some_heavy_computation(a, b, c):
     return a * b + c
 
-@probe()
+@probe(show_args=True, show_kwargs=True, show_returns=True)
 def someone_elses_code():
     # code that does not explain itself
     #
-    # A
-    # HHHUUUUGGGGGEEEEE
-    # MESS
+    # show examples of args, kwargs, and return values at runtime to get some clue
 
-@guard()
-def play_with_fire():
-    return 1 / 0
+@probe(show_caller=5)
+def a_call_chain_would_be_nice():
+    # find out with show_caller=<number_of_callers_along_the_chain>
 
-@todo()
+@guard(fallback_retval=0)
+def this_could_blow_up(a, b):
+    return a / b
+
+@todo('Not implemented')
 def i_am_not_ready():
-    pass
+    # code is under construction, so throw an error when called prematurely
 
 @guard()
-@memoization()
+@memoize()
 def recursive_or_dynamic_programming_subroutine(n):
     assert isinstance(n, int) and n >= 0
     if n == 0:
