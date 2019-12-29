@@ -1,5 +1,8 @@
 # wrappy
-Decorators for common develop utilities.
+Decorators for common developer utilities in Python 3.6+.
+
+# Documentation
+Documentation is under construction; for now, check out docs/build/html or the source code.
 
 # Usage
 ```Python
