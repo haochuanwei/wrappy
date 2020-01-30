@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="wrappy",
-    version="0.1.3",
+    version="0.1.4",
     author="Harry Wei",
     author_email="pepsimixt@gmail.com",
     description="Decorators for common developer utility",
@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/haochuanwei/wrappy",
     packages=setuptools.find_packages(),
     install_requires=[
-        'wasabi>=0.4.2',
+        'wasabi>=0.4',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
