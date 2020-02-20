@@ -190,6 +190,7 @@ def memoize(cache_limit=1000):
     """
     def wrapper(func):
         memory = OrderedDict()
+
         @wraps(func)
         def memoized_func(*args, **kwargs):
             lookup_key = args_as_string(*args, **kwargs)
