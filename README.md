@@ -2,7 +2,7 @@
 Decorators for common developer utilities in Python 3.6+.
 
 # Documentation
-Documentation is under construction; for now, check out docs/build/html or the source code.
+Documentation is built with Mkdocs. Please visit the ```docs/``` folder.
 
 # Usage
 ```Python
