@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="None">
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>Wrappy Documentation</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body class="homepage">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">Wrappy Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem active">
+                                <a href="." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="about/" class="nav-link">About</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" class="nav-link disabled">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="about/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#home" class="nav-link">Home</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#installation" class="nav-link">Installation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#usage" class="nav-link">Usage</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="home">Home</h1>
+<p>Decorators for common developer utilities in Python 3.6+.</p>
+<p>For more information, please visit the project on <a href="https://github.com/haochuanwei/wrappy">Github</a>.</p>
+<h2 id="installation">Installation</h2>
+<pre><code class="bash">pip install wrappy
+</code></pre>
+
+<h2 id="usage">Usage</h2>
+<pre><code class="python">import wrappy
+</code></pre>
+
+<h3 id="investigate-functionmethod-behavior-with-probe">Investigate function/method behavior with <code>@probe()</code></h3>
+<p><code>wrappy.probe()</code> gives a decorator that prints information when the decorated function is called.
+It primarily has the following options:</p>
+<ul>
+<li>show_caller (bool or int): whether to show the caller(s) and how many levels to show.<ul>
+<li><code>probe(show_caller=True)</code> shows the immediate caller;</li>
+<li><code>probe(show_caller=3)</code> shows callers up to 3 levels up the stack.</li>
+</ul>
+</li>
+<li>show_args (bool): whether to print positional arguments</li>
+<li>show_kwargs (bool): whether to print keyword arguments</li>
+<li>show_returns (bool): whether to print returned values</li>
+</ul>
+<pre><code class="Python">from wrappy import probe
+
+@probe() # by default, probe() only tracks running time
+def do_some_heavy_computation(a, b, c):
+    return a * b + c
+
+@probe(show_args=True, show_kwargs=True, show_returns=True)
+def someone_elses_code():
+    # code that does not explain itself
+    #
+    # show examples of args, kwargs, and return values at runtime to get some clue
+
+@probe(show_caller=5)
+def a_call_chain_would_be_nice():
+    # find out with show_caller=&lt;number_of_callers_along_the_chain&gt;
+</code></pre>
+
+<h3 id="fail-safe-a-functionmethod-with-guard">Fail-safe a function/method with <code>@guard()</code></h3>
+<p><code>wrappy.guard()</code> wraps a try-except block around the decorated function, and returns a specified value or function call when getting an exception.
+It has the following options:</p>
+<ul>
+<li>fallback_retval (any): the return value to use when getting an exception .</li>
+<li>fallback_func (callable): the alternative function to call when getting an exception. If supplied, the fallback function must be callable and will override the fallback value. </li>
+<li>print_traceback (bool): whether to show the traceback information when getting an exception.</li>
+</ul>
+<pre><code class="Python">from wrappy import guard
+
+@guard(fallback_retval=0)
+def this_could_blow_up(a, b):
+    return a / b
+
+@guard(fallback_func=local_robust_api)
+def online_cool_api(*args):
+    # make an HTTP request that could fail
+</code></pre>
+
+<h3 id="easy-memoization-with-memoize">Easy memoization with <code>@memoize()</code></h3>
+<p>Using a least-recently-used(LRU) cache, store the return values of a function given a set of positional/keyword arguments passed to it. The following options are available:</p>
+<ul>
+<li>cache_limit (int): the size of the LRU cache in terms of sets of arguments, which is 1000 by default.</li>
+</ul>
+<pre><code class="Python">from wrappy import memoize, guard
+
+@guard()
+@memoize()
+def recursive_or_dynamic_programming_subroutine(n):
+    assert isinstance(n, int) and n &gt;= 0
+    if n == 0:
+        return 0
+    return n + recursive_or_dynamic_programming_subroutine(n-1)
+</code></pre>
+
+<h3 id="prevent-a-functionmethod-from-running-with-todo">Prevent a function/method from running with <code>@todo()</code></h3>
+<p>This is self-explanatory -- <code>@todo()</code> denotes a function that is yet to be implemented, and no other code should call it. Using the decorator lets you place calls of this function in other code before finishing it, without leaving bugs behind.</p>
+<pre><code class="Python">@todo('Not implemented')
+def i_am_not_ready():
+    # code is under construction, so throw an error when called prematurely
+</code></pre></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+        <script src="search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.1
+Build Date UTC : 2020-02-24 13:06:59
+-->
