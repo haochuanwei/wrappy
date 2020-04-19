@@ -2,9 +2,9 @@
 Decorators for common developer utilities in Python 3.6+.
 
 # Documentation
-Documentation is built with Mkdocs. Please visit the ```docs/``` folder.
+Documentation is built with Mkdocs and hosted [here](https://erniethornhill.github.io/wrappy/).
 
-# Usage
+# Quick Examples (see the docs for more detail)
 ```Python
 @probe()
 def do_some_heavy_computation(a, b, c):
