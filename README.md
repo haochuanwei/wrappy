@@ -1,11 +1,13 @@
 # wrappy
 Decorators for common developer utilities in Python 3.6+.
 
-# Documentation
+## Documentation
 Documentation is built with Mkdocs and hosted [here](https://erniethornhill.github.io/wrappy/).
 
-# Quick Examples (see the docs for more detail)
+## Quick Examples (see the docs for more detail)
 ```Python
+from wrappy import probe, guard, todo, memoize
+
 @probe()
 def do_some_heavy_computation(a, b, c):
     return a * b + c
@@ -36,3 +38,6 @@ def recursive_or_dynamic_programming_subroutine(n):
         return 0
     return n + recursive_or_dynamic_programming_subroutine(n-1)
 ```
+
+## Examples by Comparison
+
