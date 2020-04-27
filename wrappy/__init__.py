@@ -197,13 +197,11 @@ def memoize(cache_limit=1000, persist_path=None):
         assert isinstance(persist_path, str)
         assert persist_path
         # this threshold only exists when persist_path is valid
-        persist_threshold = max(cache_limit // 10, 1)
+        persist_threshold = min(max(cache_limit // 10, 1), 500)
     
     def wrapper(func):
         if persist_path:
             logger.info(f"Persisting {func.__module__}.{func.__qualname__}() output to {persist_path}.")
-            # keep track of evaluation status
-            evaluations = 0
             # load or initialize memory
             if os.path.isfile(persist_path):
                 with open(persist_path, 'rb') as f:
@@ -212,9 +210,13 @@ def memoize(cache_limit=1000, persist_path=None):
                 memory = OrderedDict()
         else:
             memory = OrderedDict()
+        # keep track of update status
+        updates = 0
 
         @wraps(func)
         def memoized_func(*args, **kwargs):
+            # gain assignment access to the updates variable
+            nonlocal updates
             lookup_key = args_as_string(*args, **kwargs)
             if lookup_key in memory:
                 # if already memoized, refresh to the last-in position in the memory
@@ -224,18 +226,16 @@ def memoize(cache_limit=1000, persist_path=None):
                 # if not memoized, compute the value and store it in the memory
                 retval = func(*args, **kwargs)
                 memory[lookup_key] = retval
+                updates += 1
                 # if memory if full, drop in a FIFO manner
                 if len(memory.keys()) > cache_limit:
                     memory.popitem(last=False)
             
-            # count evaluations and persist to disk when enough evaluations have taken place
-            if persist_path:
-                nonlocal evaluations
-                evaluations += 1
-                if evaluations >= persist_threshold:
-                    evaluations = 0
-                    with open(persist_path, 'wb') as f:
-                        pickle.dump(memory, f)
+            # count updates and persist to disk when enough evaluations have taken place
+            if persist_path and updates >= persist_threshold:
+                updates = 0
+                with open(persist_path, 'wb') as f:
+                    pickle.dump(memory, f)
                     
             return retval
         return memoized_func
