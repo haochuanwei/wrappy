@@ -10,6 +10,7 @@ import wasabi
 import traceback
 import random
 import json
+import dill as pickle
 
 logger = wasabi.Printer()
 INFO_COLOR = "blue"
@@ -181,16 +182,31 @@ def args_as_string(*args, **kwargs):
     kwargs_str_form = json.dumps(kwargs, ensure_ascii=False, sort_keys=True)
     return f"args: {args_str_form}, kwargs: {kwargs_str_form}"
 
-def memoize(cache_limit=1000):
+def memoize(cache_limit=1000, persist_path=None):
     """Memoize the output of a function with an OrderedDict for least-recently-used(LRU) caching.
+    Optionally persist results to disk.
     
     :param cache_limit: the maximum number of distinct inputs to memoize.
     :type cache_limit: int
+    :param persist_path: the path to store results using pickle (dill).
+    :type persist_path: str
     :returns: callable -- a parametrized decorator.
     """
+    if persist_path is not None:
+        assert isinstance(persist_path, str)
+        assert persist_path
+        # this threshold only exists when persist_path is valid
+        persist_threshold = max(cache_limit // 10, 1)
+    
     def wrapper(func):
-        memory = OrderedDict()
-
+        if os.path.isfile(persist_path):
+            with open(persist_path, 'rb') as f:
+                memory = pickle.load(f)
+        else:
+            memory = OrderedDict()
+        # keep track of evaluation status
+        evaluations = 0
+ 
         @wraps(func)
         def memoized_func(*args, **kwargs):
             lookup_key = args_as_string(*args, **kwargs)
@@ -205,6 +221,15 @@ def memoize(cache_limit=1000):
                 # if memory if full, drop in a FIFO manner
                 if len(memory.keys()) > cache_limit:
                     memory.popitem(last=False)
+            
+            # count evaluations and persist to disk when enough evaluations have taken place
+            if persist_path:
+                evaluations += 1
+                if evaluations >= persist_threshold:
+                    with open(persist_path, 'wb') as f:
+                        pickle.dump(memory, f)
+                    evaluations = 0
+                    
             return retval
         return memoized_func
     return wrapper
