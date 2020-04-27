@@ -200,13 +200,17 @@ def memoize(cache_limit=1000, persist_path=None):
         persist_threshold = max(cache_limit // 10, 1)
     
     def wrapper(func):
-        if os.path.isfile(persist_path):
-            with open(persist_path, 'rb') as f:
-                memory = pickle.load(f)
+        if persist_path:
+            # keep track of evaluation status
+            evaluations = 0
+            # load or initialize memory
+            if os.path.isfile(persist_path):
+                with open(persist_path, 'rb') as f:
+                    memory = pickle.load(f)
+            else:
+                memory = OrderedDict()
         else:
             memory = OrderedDict()
-        # keep track of evaluation status
-        evaluations = 0
  
         @wraps(func)
         def memoized_func(*args, **kwargs):
