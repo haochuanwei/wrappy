@@ -10,6 +10,7 @@ import wasabi
 import traceback
 import random
 import json
+import os
 import dill as pickle
 
 logger = wasabi.Printer()
