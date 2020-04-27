@@ -201,6 +201,7 @@ def memoize(cache_limit=1000, persist_path=None):
     
     def wrapper(func):
         if persist_path:
+            logger.info(f"Persisting {func.__qualname__} output to {persist_path}.")
             # keep track of evaluation status
             evaluations = 0
             # load or initialize memory
