@@ -201,8 +201,6 @@ def memoize(cache_limit=1000, persist_path=None):
     
     def wrapper(func):
         if persist_path:
-            # keep track of evaluation status
-            evaluations = 0
             # load or initialize memory
             if os.path.isfile(persist_path):
                 with open(persist_path, 'rb') as f:
@@ -211,7 +209,9 @@ def memoize(cache_limit=1000, persist_path=None):
                 memory = OrderedDict()
         else:
             memory = OrderedDict()
- 
+        # keep track of evaluation status
+        evaluations = 0
+
         @wraps(func)
         def memoized_func(*args, **kwargs):
             lookup_key = args_as_string(*args, **kwargs)
@@ -228,12 +228,11 @@ def memoize(cache_limit=1000, persist_path=None):
                     memory.popitem(last=False)
             
             # count evaluations and persist to disk when enough evaluations have taken place
-            if persist_path:
-                evaluations += 1
-                if evaluations >= persist_threshold:
-                    with open(persist_path, 'wb') as f:
-                        pickle.dump(memory, f)
-                    evaluations = 0
+            evaluations += 1
+            if persist_path and evaluations >= persist_threshold:
+                with open(persist_path, 'wb') as f:
+                    pickle.dump(memory, f)
+                evaluations = 0
                     
             return retval
         return memoized_func
