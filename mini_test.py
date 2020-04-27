@@ -1,7 +1,7 @@
 from wrappy import guard, probe, memoize
 import time
 
-@memoize()
+@memoize(cache_limit=200, persist_path='./factorials.pkl')
 @guard()
 def factorial(n):
     assert isinstance(n, int) and n > -1
