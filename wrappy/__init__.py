@@ -7,6 +7,7 @@ from time import time
 from pprint import pformat
 import inspect
 import wasabi
+from wasabi import msg as logger
 import traceback
 import random
 import json
