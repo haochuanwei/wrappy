@@ -13,8 +13,6 @@ import random
 import json
 import os
 import dill as pickle
-
-logger = wasabi.Printer()
 INFO_COLOR = "blue"
 THEME_COLORS = ["green", "black", "red", "cyan", "yellow"]
 
