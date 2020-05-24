@@ -5,18 +5,26 @@ from functools import wraps
 from collections import OrderedDict
 from time import time
 from pprint import pformat
-import inspect
-import wasabi
-from wasabi import msg as logger
-import traceback
 import random
 import json
 import os
 import dill as pickle
+import inspect
+import traceback
+import wasabi
+from wasabi import msg as logger
+
 INFO_COLOR = "blue"
 THEME_COLORS = ["green", "black", "red", "cyan", "yellow"]
 
-def probe(show_caller=False, show_args=False, show_kwargs=False, show_returns=False, random_theme=True):
+
+def probe(
+    show_caller=False,
+    show_args=False,
+    show_kwargs=False,
+    show_returns=False,
+    random_theme=True,
+):
     """Builds a customized decorator that prints information at runtime.
 
     :param show_caller: whether to show the caller(s) of the decorated function, and how many levels to show.
@@ -45,31 +53,41 @@ def probe(show_caller=False, show_args=False, show_kwargs=False, show_returns=Fa
     def wrapper(func):
         @wraps(func)
         def probed_func(*args, **kwargs):
-            func_name = wasabi.color(func.__qualname__, fg=fore_color, bg=back_color, bold=True)
-            module_name = wasabi.color(func.__module__, fg=fore_color, bg=back_color, bold=True)
+            func_name = wasabi.color(
+                func.__qualname__, fg=fore_color, bg=back_color, bold=True
+            )
+            module_name = wasabi.color(
+                func.__module__, fg=fore_color, bg=back_color, bold=True
+            )
             logger.divider(f"Probing {func_name}")
             logger.divider(f"From module {module_name}", char="_")
 
             if show_caller:
                 caller_max_level = show_caller if isinstance(show_caller, int) else 1
-                caller_names = [get_caller_name(k+3) for k in range(caller_max_level)]
+                caller_names = [get_caller_name(k + 3) for k in range(caller_max_level)]
                 logger.divider(f"{func_name} caller", char="-")
                 for i, _caller_name in enumerate(caller_names):
-                    format_caller_name = wasabi.color(_caller_name, fg=INFO_COLOR, bold=True)
+                    format_caller_name = wasabi.color(
+                        _caller_name, fg=INFO_COLOR, bold=True
+                    )
                     logger.text(f"Level {i+1} {format_caller_name}")
 
             if show_args:
-                args_zip= zip(inspect.getargspec(func).args, args)
+                args_zip = zip(inspect.getargspec(func).args, args)
                 format_args = dict()
                 for _arg_name, _arg_value in args_zip:
-                    format_args[wasabi.color(_arg_name, fg=INFO_COLOR, bold=True)] = pformat(_arg_value)
+                    format_args[
+                        wasabi.color(_arg_name, fg=INFO_COLOR, bold=True)
+                    ] = pformat(_arg_value)
                 logger.divider(f"{func_name} args", char="-")
                 print(wasabi.table(format_args))
 
             if show_kwargs:
                 format_kwargs = dict()
                 for _kwarg_name, _kwarg_value in kwargs.items():
-                    format_kwargs[wasabi.color(_kwarg_name, fg=INFO_COLOR, bold=True)] = pformat(_kwarg_value)
+                    format_kwargs[
+                        wasabi.color(_kwarg_name, fg=INFO_COLOR, bold=True)
+                    ] = pformat(_kwarg_value)
                 logger.divider(f"{func_name} kwargs", char="-")
                 print(wasabi.table(format_kwargs))
 
@@ -85,8 +103,11 @@ def probe(show_caller=False, show_args=False, show_kwargs=False, show_returns=Fa
 
             logger.divider()
             return retval
+
         return probed_func
+
     return wrapper
+
 
 def get_caller_name(skip=2):
     """Get the name of a caller in the format module.class.method.
@@ -113,6 +134,7 @@ def get_caller_name(skip=2):
     del parentframe
     return ".".join(name)
 
+
 def todo(message="This functions is not yet implemented."):
     """Mark a function as to-do so that it throws an error when called.
 
@@ -120,12 +142,16 @@ def todo(message="This functions is not yet implemented."):
     :type message: str
     :returns: callable -- a parametrized decorator.
     """
+
     def wrapper(func):
         @wraps(func)
         def todo_func(*args, **kwargs):
             raise ValueError(message)
+
         return todo_func
+
     return wrapper
+
 
 def guard(fallback_retval=0, fallback_func=None, print_traceback=False):
     """Wraps a try-except block around a function, with a fallback return value or function.
@@ -152,9 +178,10 @@ def guard(fallback_retval=0, fallback_func=None, print_traceback=False):
         # recursively guard the fallback function in case it crashes too
         fallback = guard(print_traceback=print_traceback)(fallback_func)
     else:
+
         def fallback(*args, **kwargs):
             return fallback_retval
-        
+
     # construct the actual decorator
     def wrapper(func):
         @wraps(func)
@@ -162,14 +189,19 @@ def guard(fallback_retval=0, fallback_func=None, print_traceback=False):
             try:
                 retval = func(*args, **kwargs)
             except Exception as e:
-                logger.warn(f"Guarding function {func.__module__}.{func.__qualname__}: suppressing {type(e)}: {e}")
+                logger.warn(
+                    f"Guarding function {func.__module__}.{func.__qualname__}: suppressing {type(e)}: {e}"
+                )
                 if print_traceback:
                     traceback.print_exc()
                 retval = fallback(*args, **kwargs)
             finally:
                 return retval
+
         return guarded_func
+
     return wrapper
+
 
 def args_as_string(*args, **kwargs):
     """Turn arguments and keyword arguments into a string representation.
@@ -181,6 +213,7 @@ def args_as_string(*args, **kwargs):
     args_str_form = ", ".join([_arg.__repr__() for _arg in args])
     kwargs_str_form = json.dumps(kwargs, ensure_ascii=False, sort_keys=True)
     return f"args: {args_str_form}, kwargs: {kwargs_str_form}"
+
 
 def memoize(cache_limit=1000, persist_path=None):
     """Memoize the output of a function with an OrderedDict for least-recently-used(LRU) caching.
@@ -197,13 +230,15 @@ def memoize(cache_limit=1000, persist_path=None):
         assert persist_path
         # this threshold only exists when persist_path is valid
         persist_threshold = min(max(cache_limit // 10, 1), 500)
-    
+
     def wrapper(func):
         if persist_path:
-            logger.info(f"Persisting {func.__module__}.{func.__qualname__}() output to {persist_path}.")
+            logger.info(
+                f"Persisting {func.__module__}.{func.__qualname__}() output to {persist_path}."
+            )
             # load or initialize memory
             if os.path.isfile(persist_path):
-                with open(persist_path, 'rb') as f:
+                with open(persist_path, "rb") as f:
                     memory = pickle.load(f)
             else:
                 memory = OrderedDict()
@@ -229,13 +264,15 @@ def memoize(cache_limit=1000, persist_path=None):
                 # if memory if full, drop in a FIFO manner
                 if len(memory.keys()) > cache_limit:
                     memory.popitem(last=False)
-            
+
             # count updates and persist to disk when enough evaluations have taken place
             if persist_path and updates >= persist_threshold:
                 updates = 0
-                with open(persist_path, 'wb') as f:
+                with open(persist_path, "wb") as f:
                     pickle.dump(memory, f)
-                    
+
             return retval
+
         return memoized_func
+
     return wrapper
