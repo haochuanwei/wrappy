@@ -1,7 +1,8 @@
 TEST_MODULE_PATH=./wrappy
+VULTURE_EXCLUDE=*ipynb_checkpoints*
 
 pull-makefile:
-	wget https://raw.githubusercontent.com/haochuanwei/make_macros/master/python_package_dev/Makefile
+	@wget https://raw.githubusercontent.com/haochuanwei/make_macros/master/python_package_dev/Makefile
 clean:
 	@echo "Cleaning package build files.."
 	@rm -rf build
@@ -17,3 +18,5 @@ publish:
 coverage:
 	@coverage run --source=$(TEST_MODULE_PATH) -m pytest
 	@coverage report -m
+vulture:
+	@vulture $(TEST_MODULE_PATH) --exclude $(VULTURE_EXCLUDE)
