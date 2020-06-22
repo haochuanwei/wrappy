@@ -5,6 +5,7 @@ from functools import wraps
 from collections import OrderedDict
 from time import time
 from pprint import pformat
+from copy import deepcopy
 import random
 import json
 import os
@@ -215,12 +216,14 @@ def args_as_string(*args, **kwargs):
     return f"args: {args_str_form}, kwargs: {kwargs_str_form}"
 
 
-def memoize(cache_limit=1000, persist_path=None):
+def memoize(cache_limit=1000, return_copy=True, persist_path=None):
     """Memoize the output of a function with an OrderedDict for least-recently-used(LRU) caching.
     Optionally persist results to disk.
     
     :param cache_limit: the maximum number of distinct inputs to memoize.
     :type cache_limit: int
+    :param return_copy: whether to return a (deep) copy of the memoized value.
+    :type return_copy: bool
     :param persist_path: the path to store results using pickle (dill).
     :type persist_path: str
     :returns: callable -- a parametrized decorator.
@@ -271,7 +274,7 @@ def memoize(cache_limit=1000, persist_path=None):
                 with open(persist_path, "wb") as f:
                     pickle.dump(memory, f)
 
-            return retval
+            return deepcopy(retval) if return_copy else retval
 
         return memoized_func
 
