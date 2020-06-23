@@ -216,7 +216,7 @@ def args_as_string(*args, **kwargs):
     return f"args: {args_str_form}, kwargs: {kwargs_str_form}"
 
 
-def memoize(cache_limit=1000, return_copy=True, persist_path=None):
+def memoize(cache_limit=1000, return_copy=True, persist_path=None, persist_batch_size=1000):
     """Memoize the output of a function with an OrderedDict for least-recently-used(LRU) caching.
     Optionally persist results to disk.
     
@@ -230,9 +230,7 @@ def memoize(cache_limit=1000, return_copy=True, persist_path=None):
     """
     if persist_path is not None:
         assert isinstance(persist_path, str)
-        assert persist_path
-        # this threshold only exists when persist_path is valid
-        persist_threshold = min(max(cache_limit // 10, 1), 500)
+        assert isinstance(persist_batch_size, int) and persist_batch_size >= 1
 
     def wrapper(func):
         if persist_path:
@@ -269,7 +267,7 @@ def memoize(cache_limit=1000, return_copy=True, persist_path=None):
                     memory.popitem(last=False)
 
             # count updates and persist to disk when enough evaluations have taken place
-            if persist_path and updates >= persist_threshold:
+            if persist_path and updates >= persist_batch_size:
                 updates = 0
                 with open(persist_path, "wb") as f:
                     pickle.dump(memory, f)
