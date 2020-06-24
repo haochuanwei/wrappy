@@ -226,6 +226,8 @@ def memoize(cache_limit=1000, return_copy=True, persist_path=None, persist_batch
     :type return_copy: bool
     :param persist_path: the path to store results using pickle (dill).
     :type persist_path: str
+    :param persist_batch_size: the number of updates between persisting.
+    :type persist_batch_size: int
     :returns: callable -- a parametrized decorator.
     """
     if persist_path is not None:
