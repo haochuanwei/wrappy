@@ -216,7 +216,7 @@ def args_as_string(*args, **kwargs):
     return f"args: {args_str_form}, kwargs: {kwargs_str_form}"
 
 
-def memoize(cache_limit=1000, return_copy=True, persist_path=None, persist_batch_size=1000):
+def memoize(cache_limit=1000, return_copy=False, persist_path=None, persist_batch_size=1000):
     """Memoize the output of a function with an OrderedDict for least-recently-used(LRU) caching.
     Optionally persist results to disk.
     
