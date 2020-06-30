@@ -248,12 +248,10 @@ def memoize(cache_limit=1000, return_copy=True, persist_path=None, persist_batch
         else:
             memory = OrderedDict()
         # keep track of update status
-        updates = 0
+        state_dict = dict(updates=0)
 
         @wraps(func)
         def memoized_func(*args, **kwargs):
-            # gain assignment access to the updates variable
-            nonlocal updates
             lookup_key = args_as_string(*args, **kwargs)
             if lookup_key in memory:
                 # if already memoized, refresh to the last-in position in the memory
@@ -263,14 +261,14 @@ def memoize(cache_limit=1000, return_copy=True, persist_path=None, persist_batch
                 # if not memoized, compute the value and store it in the memory
                 retval = func(*args, **kwargs)
                 memory[lookup_key] = retval
-                updates += 1
+                state_dict['updates'] += 1
                 # if memory if full, drop in a FIFO manner
                 if len(memory.keys()) > cache_limit:
                     memory.popitem(last=False)
 
             # count updates and persist to disk when enough evaluations have taken place
-            if persist_path and updates >= persist_batch_size:
-                updates = 0
+            if persist_path and state_dict['updates'] >= persist_batch_size:
+                state_dict['updates'] = 0
                 with open(persist_path, "wb") as f:
                     pickle.dump(memory, f)
 
