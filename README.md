@@ -2,7 +2,7 @@
 Decorators for common developer utilities in Python 3.6+.
 
 ## Documentation
-Documentation is built with Mkdocs and hosted [here](https://erniethornhill.github.io/wrappy/).
+Documentation is built with Mkdocs and hosted [here](https://haochuanwei.github.io/wrappy/).
 
 ## Quick Examples (see the docs for more detail)
 ```Python
