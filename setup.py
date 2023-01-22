@@ -1,7 +1,14 @@
 import setuptools
+import os
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+def get_description():
+    if os.path.isfile("README.md"):
+        with open("README.md", "r") as fh:
+            desc = fh.read()
+    else:
+        desc = ""
+    return desc
+
 
 setuptools.setup(
     name="wrappy",
@@ -19,6 +26,7 @@ setuptools.setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
