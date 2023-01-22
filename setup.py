@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="wrappy",
-    version="0.2.6",
-    author="Ernie Thornhill",
-    author_email="pepsimixt@gmail.com",
-    description="Decorators for common developer utility",
+    version="0.2.7",
+    author="Haochuan Wei",
+    author_email="haochuanwei@yahoo.com",
+    description="Decorators for common developer utility.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ErnieThornhill/wrappy",
+    url="https://github.com/haochuanwei/wrappy",
     packages=setuptools.find_packages(),
     install_requires=[
         'wasabi>=0.4',
