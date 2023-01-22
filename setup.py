@@ -16,7 +16,7 @@ setuptools.setup(
     author="Haochuan Wei",
     author_email="haochuanwei@yahoo.com",
     description="Decorators for common developer utility.",
-    long_description=long_description,
+    long_description=get_description(),
     long_description_content_type="text/markdown",
     url="https://github.com/haochuanwei/wrappy",
     packages=setuptools.find_packages(),
